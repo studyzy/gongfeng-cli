@@ -24,9 +24,12 @@ profile.cov
 go.work
 go.work.sum
 
+# Binary
+gongfeng
+
 # env file
 .env
 
 # Editor/IDE
-# .idea/
-# .vscode/
+.idea/
+.vscode/
