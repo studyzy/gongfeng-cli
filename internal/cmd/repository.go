@@ -70,6 +70,8 @@ var repoFileCmd = &cobra.Command{
 		}
 		if rpFlagRef != "" {
 			opts.Ref = gongfeng.Ptr(rpFlagRef)
+		} else {
+			opts.Ref = gongfeng.Ptr("HEAD")
 		}
 		file, _, err := apiClient.Repositories.GetFile(context.Background(), projectID(), opts)
 		if err != nil {

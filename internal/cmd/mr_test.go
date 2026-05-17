@@ -8,7 +8,7 @@ import (
 func TestMRDownloadFiles(t *testing.T) {
 	mux := setupTest(t)
 
-	mux.HandleFunc("/api/v3/projects/123/merge_requests/1/changed_files", func(w http.ResponseWriter, r *http.Request) {
+	mux.HandleFunc("/api/v3/projects/123/merge_request/1/changed_files", func(w http.ResponseWriter, r *http.Request) {
 		if r.Method != http.MethodGet {
 			t.Errorf("expected GET, got %s", r.Method)
 		}
