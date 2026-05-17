@@ -76,9 +76,6 @@ var milestoneCreateCmd = &cobra.Command{
 		if msFlagDueDate != "" {
 			opts.DueDate = gongfeng.Ptr(msFlagDueDate)
 		}
-		if msFlagStateEvent != "" {
-			opts.StateEvent = gongfeng.Ptr(msFlagStateEvent)
-		}
 		milestone, _, err := apiClient.Milestones.CreateMilestone(context.Background(), projectID(), opts)
 		if err != nil {
 			exitWithAPIError(err)

@@ -278,8 +278,10 @@ var projectSearchCmd = &cobra.Command{
 	Args:  cobra.ExactArgs(1),
 	RunE: func(cmd *cobra.Command, args []string) error {
 		ctx := context.Background()
-
-		projects, _, err := apiClient.Projects.SearchProjects(ctx, args[0])
+		opts := &gongfeng.ListProjectsOptions{
+			Search: gongfeng.Ptr(args[0]),
+		}
+		projects, _, err := apiClient.Projects.ListProjects(ctx, opts)
 		if err != nil {
 			exitWithAPIError(err)
 		}

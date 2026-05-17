@@ -23,7 +23,7 @@ var (
 	mrFlagDescription  string
 	mrFlagAssigneeID   int
 	mrFlagReviewers    string
-	mrFlagApproverRule string
+	mrFlagApproverRule int
 	mrFlagStateEvent   string
 	mrFlagMergeMsg     string
 )
@@ -104,7 +104,7 @@ var mrCreateCmd = &cobra.Command{
 		if mrFlagReviewers != "" {
 			opts.Reviewers = gongfeng.Ptr(mrFlagReviewers)
 		}
-		if mrFlagApproverRule != "" {
+		if mrFlagApproverRule != 0 {
 			opts.ApproverRule = gongfeng.Ptr(mrFlagApproverRule)
 		}
 		mr, _, err := apiClient.MergeRequests.CreateMergeRequest(context.Background(), projectID(), opts)
@@ -252,7 +252,7 @@ func init() {
 	mrCreateCmd.Flags().StringVar(&mrFlagDescription, "description", "", "MR 描述")
 	mrCreateCmd.Flags().IntVar(&mrFlagAssigneeID, "assignee-id", 0, "指派人 ID")
 	mrCreateCmd.Flags().StringVar(&mrFlagReviewers, "reviewers", "", "评审人")
-	mrCreateCmd.Flags().StringVar(&mrFlagApproverRule, "approver-rule", "", "审批规则")
+	mrCreateCmd.Flags().IntVar(&mrFlagApproverRule, "approver-rule", 0, "审批规则")
 
 	// update flags
 	mrUpdateCmd.Flags().StringVar(&mrFlagTitle, "title", "", "MR 标题")
