@@ -18,10 +18,13 @@ var (
 	rpFlagBranch        string
 	rpFlagContent       string
 	rpFlagCommitMessage string
+	rpFlagEncoding      string
 	rpFlagFrom          string
 	rpFlagTo            string
+	rpFlagStraight      bool
 	rpFlagPage          int
 	rpFlagPerPage       int
+	rpFlagRawFilePath   string
 )
 
 var repoCmd = &cobra.Command{
@@ -99,6 +102,9 @@ var repoCreateFileCmd = &cobra.Command{
 			Content:       gongfeng.Ptr(rpFlagContent),
 			CommitMessage: gongfeng.Ptr(rpFlagCommitMessage),
 		}
+		if rpFlagEncoding != "" {
+			opts.Encoding = gongfeng.Ptr(rpFlagEncoding)
+		}
 		file, _, err := apiClient.Repositories.CreateFile(context.Background(), projectID(), opts)
 		if err != nil {
 			exitWithAPIError(err)
@@ -129,6 +135,9 @@ var repoUpdateFileCmd = &cobra.Command{
 			BranchName:    gongfeng.Ptr(rpFlagBranch),
 			Content:       gongfeng.Ptr(rpFlagContent),
 			CommitMessage: gongfeng.Ptr(rpFlagCommitMessage),
+		}
+		if rpFlagEncoding != "" {
+			opts.Encoding = gongfeng.Ptr(rpFlagEncoding)
 		}
 		file, _, err := apiClient.Repositories.UpdateFile(context.Background(), projectID(), opts)
 		if err != nil {
@@ -180,11 +189,56 @@ var repoCompareCmd = &cobra.Command{
 			From: gongfeng.Ptr(rpFlagFrom),
 			To:   gongfeng.Ptr(rpFlagTo),
 		}
+		if rpFlagStraight {
+			opts.Straight = gongfeng.Ptr(true)
+		}
 		result, _, err := apiClient.Repositories.Compare(context.Background(), projectID(), opts)
 		if err != nil {
 			exitWithAPIError(err)
 		}
 		return output.PrintJSON(os.Stdout, result, !flagPretty)
+	},
+}
+
+var repoRawCmd = &cobra.Command{
+	Use:   "raw <sha>",
+	Short: "获取 blob 原始内容",
+	Args:  cobra.ExactArgs(1),
+	RunE: func(cmd *cobra.Command, args []string) error {
+		requireProjectID()
+		ctx := context.Background()
+		var opts *gongfeng.GetRawFileOptions
+		if rpFlagRawFilePath != "" {
+			opts = &gongfeng.GetRawFileOptions{
+				FilePath: gongfeng.Ptr(rpFlagRawFilePath),
+			}
+		}
+		_, err := apiClient.Repositories.GetRawFile(ctx, projectID(), args[0], os.Stdout, opts)
+		if err != nil {
+			exitWithAPIError(err)
+		}
+		return nil
+	},
+}
+
+var repoCommitBlobCmd = &cobra.Command{
+	Use:   "commit-blob <sha>",
+	Short: "获取指定提交中的文件原始内容",
+	Args:  cobra.ExactArgs(1),
+	RunE: func(cmd *cobra.Command, args []string) error {
+		requireProjectID()
+		ctx := context.Background()
+		var opts *gongfeng.GetRawFileOptions
+		if rpFlagRawFilePath != "" {
+			opts = &gongfeng.GetRawFileOptions{
+				FilePath: gongfeng.Ptr(rpFlagRawFilePath),
+			}
+		}
+		_, err := apiClient.Repositories.GetCommitRawFile(ctx, projectID(), args[0], os.Stdout, opts)
+		if err != nil {
+			exitWithAPIError(err)
+		}
+		return nil
 	},
 }
 
@@ -204,12 +258,14 @@ func init() {
 	repoCreateFileCmd.Flags().StringVar(&rpFlagBranch, "branch-name", "", "分支名（必需）")
 	repoCreateFileCmd.Flags().StringVar(&rpFlagContent, "content", "", "文件内容（必需）")
 	repoCreateFileCmd.Flags().StringVar(&rpFlagCommitMessage, "commit-message", "", "提交信息（必需）")
+	repoCreateFileCmd.Flags().StringVar(&rpFlagEncoding, "encoding", "", "文件编码（如 base64）")
 
 	// update-file flags
 	repoUpdateFileCmd.Flags().StringVar(&rpFlagFilePath, "file-path", "", "文件路径（必需）")
 	repoUpdateFileCmd.Flags().StringVar(&rpFlagBranch, "branch-name", "", "分支名（必需）")
 	repoUpdateFileCmd.Flags().StringVar(&rpFlagContent, "content", "", "文件内容（必需）")
 	repoUpdateFileCmd.Flags().StringVar(&rpFlagCommitMessage, "commit-message", "", "提交信息（必需）")
+	repoUpdateFileCmd.Flags().StringVar(&rpFlagEncoding, "encoding", "", "文件编码（如 base64）")
 
 	// delete-file flags
 	repoDeleteFileCmd.Flags().StringVar(&rpFlagFilePath, "file-path", "", "文件路径（必需）")
@@ -219,7 +275,14 @@ func init() {
 	// compare flags
 	repoCompareCmd.Flags().StringVar(&rpFlagFrom, "from", "", "源分支/Tag/SHA（必需）")
 	repoCompareCmd.Flags().StringVar(&rpFlagTo, "to", "", "目标分支/Tag/SHA（必需）")
+	repoCompareCmd.Flags().BoolVar(&rpFlagStraight, "straight", false, "使用直接比较模式")
 
-	repoCmd.AddCommand(repoTreeCmd, repoFileCmd, repoCreateFileCmd, repoUpdateFileCmd, repoDeleteFileCmd, repoCompareCmd)
+	// raw flags
+	repoRawCmd.Flags().StringVar(&rpFlagRawFilePath, "filepath", "", "文件路径")
+
+	// commit-blob flags
+	repoCommitBlobCmd.Flags().StringVar(&rpFlagRawFilePath, "filepath", "", "文件路径")
+
+	repoCmd.AddCommand(repoTreeCmd, repoFileCmd, repoCreateFileCmd, repoUpdateFileCmd, repoDeleteFileCmd, repoCompareCmd, repoRawCmd, repoCommitBlobCmd)
 	rootCmd.AddCommand(repoCmd)
 }

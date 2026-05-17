@@ -115,6 +115,21 @@ var milestoneUpdateCmd = &cobra.Command{
 	},
 }
 
+var milestoneDeleteCmd = &cobra.Command{
+	Use:   "delete <milestone_id>",
+	Short: "删除里程碑",
+	Args:  cobra.ExactArgs(1),
+	RunE: func(cmd *cobra.Command, args []string) error {
+		requireProjectID()
+		msID := atoi(args[0], "milestone_id")
+		_, err := apiClient.Milestones.DeleteMilestone(context.Background(), projectID(), msID)
+		if err != nil {
+			exitWithAPIError(err)
+		}
+		return output.PrintJSON(os.Stdout, &output.SuccessResponse{Success: true}, !flagPretty)
+	},
+}
+
 var milestoneIssuesCmd = &cobra.Command{
 	Use:   "issues <milestone_id>",
 	Short: "获取里程碑下的缺陷",
@@ -157,6 +172,6 @@ func init() {
 	milestoneIssuesCmd.Flags().IntVar(&msFlagPage, "page", 0, "页码")
 	milestoneIssuesCmd.Flags().IntVar(&msFlagPerPage, "per-page", 0, "每页数量")
 
-	milestoneCmd.AddCommand(milestoneListCmd, milestoneShowCmd, milestoneCreateCmd, milestoneUpdateCmd, milestoneIssuesCmd)
+	milestoneCmd.AddCommand(milestoneListCmd, milestoneShowCmd, milestoneCreateCmd, milestoneUpdateCmd, milestoneDeleteCmd, milestoneIssuesCmd)
 	rootCmd.AddCommand(milestoneCmd)
 }

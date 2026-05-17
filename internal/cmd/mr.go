@@ -222,6 +222,21 @@ var mrCommentsCmd = &cobra.Command{
 	},
 }
 
+var mrDownloadFilesCmd = &cobra.Command{
+	Use:   "download-files <mr_id>",
+	Short: "下载 MR 差异文件集",
+	Args:  cobra.ExactArgs(1),
+	RunE: func(cmd *cobra.Command, args []string) error {
+		requireProjectID()
+		mrID := atoi(args[0], "mr_id")
+		_, err := apiClient.MergeRequests.DownloadMergeRequestChangedFiles(context.Background(), projectID(), mrID, os.Stdout)
+		if err != nil {
+			exitWithAPIError(err)
+		}
+		return nil
+	},
+}
+
 func init() {
 	// list flags
 	mrListCmd.Flags().StringVar(&mrFlagState, "state", "", "MR 状态过滤（opened/closed/merged/all）")
@@ -257,6 +272,6 @@ func init() {
 	mrCommentsCmd.Flags().IntVar(&mrFlagPage, "page", 0, "页码")
 	mrCommentsCmd.Flags().IntVar(&mrFlagPerPage, "per-page", 0, "每页数量")
 
-	mrCmd.AddCommand(mrListCmd, mrShowCmd, mrCreateCmd, mrUpdateCmd, mrAcceptCmd, mrChangesCmd, mrCommitsCmd, mrCommentsCmd)
+	mrCmd.AddCommand(mrListCmd, mrShowCmd, mrCreateCmd, mrUpdateCmd, mrAcceptCmd, mrChangesCmd, mrCommitsCmd, mrCommentsCmd, mrDownloadFilesCmd)
 	rootCmd.AddCommand(mrCmd)
 }

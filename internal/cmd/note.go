@@ -12,9 +12,13 @@ import (
 
 // note 子命令独有的 flag 变量
 var (
-	ntFlagBody    string
-	ntFlagPage    int
-	ntFlagPerPage int
+	ntFlagBody          string
+	ntFlagPage          int
+	ntFlagPerPage       int
+	ntFlagPath          string
+	ntFlagLine          string
+	ntFlagLineType      string
+	ntFlagReviewerState string
 )
 
 var noteCmd = &cobra.Command{
@@ -73,6 +77,18 @@ var mrNoteCreateCmd = &cobra.Command{
 		opts := &gongfeng.CreateMergeRequestNoteOptions{
 			Body: gongfeng.Ptr(ntFlagBody),
 		}
+		if ntFlagPath != "" {
+			opts.Path = gongfeng.Ptr(ntFlagPath)
+		}
+		if ntFlagLine != "" {
+			opts.Line = gongfeng.Ptr(ntFlagLine)
+		}
+		if ntFlagLineType != "" {
+			opts.LineType = gongfeng.Ptr(ntFlagLineType)
+		}
+		if ntFlagReviewerState != "" {
+			opts.ReviewerState = gongfeng.Ptr(ntFlagReviewerState)
+		}
 		note, _, err := apiClient.Notes.CreateMergeRequestNote(context.Background(), projectID(), mrID, opts)
 		if err != nil {
 			exitWithAPIError(err)
@@ -94,6 +110,9 @@ var mrNoteUpdateCmd = &cobra.Command{
 		}
 		opts := &gongfeng.UpdateMergeRequestNoteOptions{
 			Body: gongfeng.Ptr(ntFlagBody),
+		}
+		if ntFlagReviewerState != "" {
+			opts.ReviewerState = gongfeng.Ptr(ntFlagReviewerState)
 		}
 		note, _, err := apiClient.Notes.UpdateMergeRequestNote(context.Background(), projectID(), mrID, noteID, opts)
 		if err != nil {
@@ -184,6 +203,102 @@ var issueNoteUpdateCmd = &cobra.Command{
 	},
 }
 
+// Review 评论
+var reviewNoteListCmd = &cobra.Command{
+	Use:   "review-list <review_id>",
+	Short: "获取代码评审评论列表",
+	Args:  cobra.ExactArgs(1),
+	RunE: func(cmd *cobra.Command, args []string) error {
+		requireProjectID()
+		reviewID := atoi(args[0], "review_id")
+		opts := &gongfeng.ListReviewNotesOptions{
+			ListOptions: gongfeng.ListOptions{
+				Page:    ntFlagPage,
+				PerPage: ntFlagPerPage,
+			},
+		}
+		notes, _, err := apiClient.Notes.ListReviewNotes(context.Background(), projectID(), reviewID, opts)
+		if err != nil {
+			exitWithAPIError(err)
+		}
+		return output.PrintJSON(os.Stdout, notes, !flagPretty)
+	},
+}
+
+var reviewNoteShowCmd = &cobra.Command{
+	Use:   "review-show <review_id> <note_id>",
+	Short: "获取指定代码评审评论",
+	Args:  cobra.ExactArgs(2),
+	RunE: func(cmd *cobra.Command, args []string) error {
+		requireProjectID()
+		reviewID := atoi(args[0], "review_id")
+		noteID := atoi(args[1], "note_id")
+		note, _, err := apiClient.Notes.GetReviewNote(context.Background(), projectID(), reviewID, noteID)
+		if err != nil {
+			exitWithAPIError(err)
+		}
+		return printDetail(note, "body")
+	},
+}
+
+var reviewNoteCreateCmd = &cobra.Command{
+	Use:   "review-create <review_id>",
+	Short: "创建代码评审评论",
+	Args:  cobra.ExactArgs(1),
+	RunE: func(cmd *cobra.Command, args []string) error {
+		requireProjectID()
+		reviewID := atoi(args[0], "review_id")
+		if ntFlagBody == "" {
+			exitWithParamError("--body is required", "Specify the note body")
+		}
+		opts := &gongfeng.CreateReviewNoteOptions{
+			Body: gongfeng.Ptr(ntFlagBody),
+		}
+		if ntFlagPath != "" {
+			opts.Path = gongfeng.Ptr(ntFlagPath)
+		}
+		if ntFlagLine != "" {
+			opts.Line = gongfeng.Ptr(ntFlagLine)
+		}
+		if ntFlagLineType != "" {
+			opts.LineType = gongfeng.Ptr(ntFlagLineType)
+		}
+		if ntFlagReviewerState != "" {
+			opts.ReviewerState = gongfeng.Ptr(ntFlagReviewerState)
+		}
+		note, _, err := apiClient.Notes.CreateReviewNote(context.Background(), projectID(), reviewID, opts)
+		if err != nil {
+			exitWithAPIError(err)
+		}
+		return printDetail(note, "body")
+	},
+}
+
+var reviewNoteUpdateCmd = &cobra.Command{
+	Use:   "review-update <review_id> <note_id>",
+	Short: "更新代码评审评论",
+	Args:  cobra.ExactArgs(2),
+	RunE: func(cmd *cobra.Command, args []string) error {
+		requireProjectID()
+		reviewID := atoi(args[0], "review_id")
+		noteID := atoi(args[1], "note_id")
+		if ntFlagBody == "" {
+			exitWithParamError("--body is required", "Specify the note body")
+		}
+		opts := &gongfeng.UpdateReviewNoteOptions{
+			Body: gongfeng.Ptr(ntFlagBody),
+		}
+		if ntFlagReviewerState != "" {
+			opts.ReviewerState = gongfeng.Ptr(ntFlagReviewerState)
+		}
+		note, _, err := apiClient.Notes.UpdateReviewNote(context.Background(), projectID(), reviewID, noteID, opts)
+		if err != nil {
+			exitWithAPIError(err)
+		}
+		return printDetail(note, "body")
+	},
+}
+
 func init() {
 	// mr-list flags
 	mrNoteListCmd.Flags().IntVar(&ntFlagPage, "page", 0, "页码")
@@ -191,9 +306,14 @@ func init() {
 
 	// mr-create flags
 	mrNoteCreateCmd.Flags().StringVar(&ntFlagBody, "body", "", "评论内容（必需）")
+	mrNoteCreateCmd.Flags().StringVar(&ntFlagPath, "path", "", "文件路径")
+	mrNoteCreateCmd.Flags().StringVar(&ntFlagLine, "line", "", "行号")
+	mrNoteCreateCmd.Flags().StringVar(&ntFlagLineType, "line-type", "", "行类型（new/old）")
+	mrNoteCreateCmd.Flags().StringVar(&ntFlagReviewerState, "reviewer-state", "", "评审状态")
 
 	// mr-update flags
 	mrNoteUpdateCmd.Flags().StringVar(&ntFlagBody, "body", "", "评论内容（必需）")
+	mrNoteUpdateCmd.Flags().StringVar(&ntFlagReviewerState, "reviewer-state", "", "评审状态")
 
 	// issue-list flags
 	issueNoteListCmd.Flags().IntVar(&ntFlagPage, "page", 0, "页码")
@@ -205,9 +325,25 @@ func init() {
 	// issue-update flags
 	issueNoteUpdateCmd.Flags().StringVar(&ntFlagBody, "body", "", "评论内容（必需）")
 
+	// review-list flags
+	reviewNoteListCmd.Flags().IntVar(&ntFlagPage, "page", 0, "页码")
+	reviewNoteListCmd.Flags().IntVar(&ntFlagPerPage, "per-page", 0, "每页数量")
+
+	// review-create flags
+	reviewNoteCreateCmd.Flags().StringVar(&ntFlagBody, "body", "", "评论内容（必需）")
+	reviewNoteCreateCmd.Flags().StringVar(&ntFlagPath, "path", "", "文件路径")
+	reviewNoteCreateCmd.Flags().StringVar(&ntFlagLine, "line", "", "行号")
+	reviewNoteCreateCmd.Flags().StringVar(&ntFlagLineType, "line-type", "", "行类型（new/old）")
+	reviewNoteCreateCmd.Flags().StringVar(&ntFlagReviewerState, "reviewer-state", "", "评审状态")
+
+	// review-update flags
+	reviewNoteUpdateCmd.Flags().StringVar(&ntFlagBody, "body", "", "评论内容（必需）")
+	reviewNoteUpdateCmd.Flags().StringVar(&ntFlagReviewerState, "reviewer-state", "", "评审状态")
+
 	noteCmd.AddCommand(
 		mrNoteListCmd, mrNoteShowCmd, mrNoteCreateCmd, mrNoteUpdateCmd,
 		issueNoteListCmd, issueNoteShowCmd, issueNoteCreateCmd, issueNoteUpdateCmd,
+		reviewNoteListCmd, reviewNoteShowCmd, reviewNoteCreateCmd, reviewNoteUpdateCmd,
 	)
 	rootCmd.AddCommand(noteCmd)
 }
