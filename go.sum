@@ -12,8 +12,8 @@ github.com/spf13/cobra v1.10.2/go.mod h1:7C1pvHqHw5A4vrJfjNwvOdzYu0Gml16OCs2GRiT
 github.com/spf13/pflag v1.0.9/go.mod h1:McXfInJRrz4CZXVZOBLb0bTZqETkiAhM9Iw0y3An2Bg=
 github.com/spf13/pflag v1.0.10 h1:4EBh2KAYBwaONj6b2Ye1GiHfwjqyROoF4RwYO+vPwFk=
 github.com/spf13/pflag v1.0.10/go.mod h1:McXfInJRrz4CZXVZOBLb0bTZqETkiAhM9Iw0y3An2Bg=
-github.com/studyzy/gongfeng-sdk-go v0.0.0-20260517162822-d920feef8ee0 h1:gImus02JHiexKV3ROlhht/ka1fqqd9dTOthCZLu/LkI=
-github.com/studyzy/gongfeng-sdk-go v0.0.0-20260517162822-d920feef8ee0/go.mod h1:9DWaRQPNcLtTVMQE1fvBiFrP2pe49PgkinLpK2dLDE0=
+github.com/studyzy/gongfeng-sdk-go v0.0.0-20260517165124-757424a6022c h1:+EBilhGw26tjpT4e5kduzQ3ObxLa0Ns42TzmGNlXiI4=
+github.com/studyzy/gongfeng-sdk-go v0.0.0-20260517165124-757424a6022c/go.mod h1:9DWaRQPNcLtTVMQE1fvBiFrP2pe49PgkinLpK2dLDE0=
 go.yaml.in/yaml/v3 v3.0.4/go.mod h1:DhzuOOF2ATzADvBadXxruRBLzYTpT36CKvDb3+aBEFg=
 golang.org/x/xerrors v0.0.0-20191204190536-9bdfabe68543/go.mod h1:I/5z698sn9Ka8TeJc9MKroUUfqBBauWjQqLJ2OPfmY0=
 gopkg.in/check.v1 v0.0.0-20161208181325-20d25e280405 h1:yhCVgyC4o1eVCa2tZl7eS0r+SDo693bJlVdllGtEeKM=

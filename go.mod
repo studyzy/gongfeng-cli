@@ -5,7 +5,7 @@ go 1.24.12
 require (
 	github.com/spf13/cobra v1.10.2
 	github.com/spf13/pflag v1.0.10
-	github.com/studyzy/gongfeng-sdk-go v0.0.0-20260517162822-d920feef8ee0
+	github.com/studyzy/gongfeng-sdk-go v0.0.0-20260517165124-757424a6022c
 	gopkg.in/yaml.v3 v3.0.1
 )
 
