@@ -69,7 +69,7 @@ func init() {
 	rootCmd.PersistentFlags().BoolVar(&flagPretty, "pretty", false, "输出带缩进的 JSON，仅供人类阅读，AI Agent 不应使用（浪费 token）")
 	rootCmd.PersistentFlags().BoolVar(&flagJSON, "json", false, "强制 JSON 输出（列表默认已是 JSON，详情默认 Markdown 更省 token）")
 	rootCmd.PersistentFlags().StringVar(&flagToken, "token", "", "工蜂 Private Token")
-	rootCmd.PersistentFlags().StringVar(&flagBaseURL, "base-url", "", "工蜂实例 URL（默认 https://code.tencent.com/）")
+	rootCmd.PersistentFlags().StringVar(&flagBaseURL, "base-url", "", "工蜂实例 URL（默认 https://git.code.tencent.com/）")
 }
 
 // initClientAndConfig 初始化配置和 API 客户端
