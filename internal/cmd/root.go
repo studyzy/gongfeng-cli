@@ -36,6 +36,10 @@ var rootCmd = &cobra.Command{
 		if cmd.Name() == "login" {
 			return nil
 		}
+		// skill 子命令（如 skill init）不需要认证
+		if parent := cmd.Parent(); parent != nil && parent.Name() == "skill" {
+			return nil
+		}
 		// --version 不需要认证
 		if v, _ := cmd.Flags().GetBool("version"); v {
 			return nil
