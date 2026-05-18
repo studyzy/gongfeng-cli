@@ -27,7 +27,7 @@ var (
 	csFlagCreateName  string
 	csFlagTargetURL   string
 	csFlagDescription string
-	csFlagContext      string
+	csFlagContext     string
 )
 
 var commitStatusCmd = &cobra.Command{

@@ -27,6 +27,9 @@ go.work.sum
 # Binary
 gongfeng
 
+# GoReleaser
+dist/
+
 # env file
 .env
 

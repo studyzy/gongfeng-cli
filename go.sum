@@ -16,6 +16,10 @@ github.com/studyzy/gongfeng-sdk-go v0.0.0-20260517180316-6523d20e67a3 h1:XGhGU8P
 github.com/studyzy/gongfeng-sdk-go v0.0.0-20260517180316-6523d20e67a3/go.mod h1:9DWaRQPNcLtTVMQE1fvBiFrP2pe49PgkinLpK2dLDE0=
 github.com/studyzy/gongfeng-sdk-go v0.0.0-20260518022831-32812cdbaa41 h1:ntXnYi3ivjmgbQ54wQJyvkwUZYwPLIS/0uiK0mH/i3k=
 github.com/studyzy/gongfeng-sdk-go v0.0.0-20260518022831-32812cdbaa41/go.mod h1:9DWaRQPNcLtTVMQE1fvBiFrP2pe49PgkinLpK2dLDE0=
+github.com/studyzy/gongfeng-sdk-go v0.5.0 h1:5dGPbMMb3X62j3QOsLqHogLvCowW0zaCQIimFcleBJ0=
+github.com/studyzy/gongfeng-sdk-go v0.5.0/go.mod h1:9DWaRQPNcLtTVMQE1fvBiFrP2pe49PgkinLpK2dLDE0=
+github.com/studyzy/gongfeng-sdk-go v0.6.0 h1:TLRJP1mrheo54kjC4Dn/tS78i7F+cnaVpnPnyyFi9nM=
+github.com/studyzy/gongfeng-sdk-go v0.6.0/go.mod h1:9DWaRQPNcLtTVMQE1fvBiFrP2pe49PgkinLpK2dLDE0=
 go.yaml.in/yaml/v3 v3.0.4/go.mod h1:DhzuOOF2ATzADvBadXxruRBLzYTpT36CKvDb3+aBEFg=
 golang.org/x/xerrors v0.0.0-20191204190536-9bdfabe68543/go.mod h1:I/5z698sn9Ka8TeJc9MKroUUfqBBauWjQqLJ2OPfmY0=
 gopkg.in/check.v1 v0.0.0-20161208181325-20d25e280405 h1:yhCVgyC4o1eVCa2tZl7eS0r+SDo693bJlVdllGtEeKM=

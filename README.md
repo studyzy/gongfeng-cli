@@ -1,6 +1,6 @@
 # gongfeng-cli
 
-面向 AI Agent 的腾讯工蜂命令行工具，通过工蜂 API 实现代码托管核心操作。
+面向 AI Agent 的腾讯工蜂命令行工具，通过工蜂 API 实现代码托管核心操作。输出针对最小 token 消耗优化，列表默认紧凑 JSON、详情默认 Markdown。
 
 ## 安装
 
@@ -43,11 +43,11 @@ export GONGFENG_TOKEN=<your_private_token>
 
 凭据也可以直接写入配置文件 `~/.gongfeng.json` 或当前目录的 `.gongfeng.json`。
 
-**凭据优先级**：CLI flags > 环境变量 > `./.gongfeng.json` > `~/.gongfeng.json`
+**凭据优先级**：环境变量 > `./.gongfeng.json` > `~/.gongfeng.json`，CLI flag（`--token`）可在调用时再次覆盖。
 
 ### 自定义工蜂站点地址
 
-如需连接私有部署的工蜂实例，可通过环境变量或配置文件指定：
+如需连接私有部署的工蜂实例，可通过环境变量、配置文件或 `--base-url` 指定：
 
 ```bash
 # 环境变量
@@ -65,7 +65,9 @@ export GONGFENG_BASE_URL=https://your-gongfeng.example.com/
 
 | 配置项 | 环境变量 | JSON 字段 | 默认值 |
 |--------|----------|-----------|--------|
-| API 地址 | `GONGFENG_BASE_URL` | `base_url` | `https://code.tencent.com/` |
+| Private Token | `GONGFENG_TOKEN` | `token` | — |
+| 项目 ID | `GONGFENG_PROJECT_ID` | `project_id` | — |
+| API 地址 | `GONGFENG_BASE_URL` | `base_url` | `https://git.code.tencent.com/` |
 
 ## 基本用法
 
@@ -74,7 +76,7 @@ export GONGFENG_BASE_URL=https://your-gongfeng.example.com/
 gongfeng project list
 
 # 查看项目详情（支持 namespace/project 路径或数字 ID）
-gongfeng project show --project-id namespace/myproject
+gongfeng project show namespace/myproject
 
 # 查询 MR 列表
 gongfeng mr list
@@ -82,7 +84,7 @@ gongfeng mr list
 # 创建 MR
 gongfeng mr create --source-branch feature/xxx --target-branch main --title "feat: 新功能"
 
-# 合并 MR
+# 合并 MR（参数为全局 id，非 iid）
 gongfeng mr accept 42
 
 # 查询分支列表
@@ -91,10 +93,10 @@ gongfeng branch list
 # 查询提交列表
 gongfeng commit list
 
-# 查询 Issue 列表
+# 查询缺陷列表
 gongfeng issue list
 
-# 创建 Issue
+# 创建缺陷
 gongfeng issue create --title "Bug: 登录失败" --description "详情..."
 
 # 查看所有命令参考（AI 自发现）
@@ -103,40 +105,56 @@ gongfeng --help
 
 ## 命令一览
 
+以 `gongfeng --help` 实际输出为准，下表用于快速概览：
+
 ```
 gongfeng
-├── auth           login --token <token> [--local]
-├── project        list | show | create | search | members
-├── mr             list | show | create | update | accept | changes | commits | comments
-├── commit         list | show | comments | refs | diff
-├── branch         list | show | create | delete | protect
+├── auth           login
+├── project        list | owned | show | create | update | delete | search
+│                  members | member-show | share | shares | unshare
+│                  events | star | unstar | star-status | stars
+├── mr             list | show | create | update | accept
+│                  changes | commits | comments | download-files
+├── commit         list | show | diff | refs | comments | create-comment
+├── commit-status  list | create | result
+├── branch         list | show | create | delete
 ├── tag            list | show | create | delete
-├── issue          list | show | create | update | close | reopen
-├── release        list | create
-├── review         list | show | create | update | comment
-├── commit-status  list | create | update
-├── repository     info
-├── group          list | show | create | delete
+├── issue          list | my-list | show | create | update
+│                  subscribe | unsubscribe
+├── release        list | show | create | update | delete
+├── review         invite | remove | mr-show | approve | reject | mr-reopen | mr-cancel
+│                  commit-list | commit-show | commit-create | commit-update
+│                  commit-approve | commit-reject | commit-reopen
+├── repo           tree | file | create-file | update-file | delete-file
+│                  compare | raw | commit-blob
+├── group          list | show | create | update | delete | members
 ├── namespace      list
-├── label          list | create | delete | subscribe
-├── milestone      list | show | create | update | close
-├── note           list | create | update | delete
-├── fork           create | list
-├── user           info
-├── watcher        list | add | remove
-├── webhook        list | create | delete
-└── version
+├── label          list | create | update | delete
+├── milestone      list | show | create | update | delete | issues
+├── note           mr-list | mr-show | mr-create | mr-update
+│                  issue-list | issue-show | issue-create | issue-update
+│                  review-list | review-show | review-create | review-update
+├── fork           create | link | unlink
+├── user           list | show | me | watched
+│                  ssh-keys | ssh-key-show | ssh-key-create | ssh-key-delete
+│                  emails | email-show | email-create | email-delete
+│                  find-by-email
+├── watcher        list | status | watch | unwatch
+├── webhook        list | show | create | update | delete
+└── skill          init
 ```
+
+`gongfeng --version` 打印版本号。
 
 ## 全局标志
 
 | 标志 | 说明 |
 |------|------|
-| `--project-id <id>` | 项目 ID 或 `namespace/project` 路径（覆盖本地配置），支持整数 ID 或字符串路径两种格式 |
-| `--token <token>` | 工蜂 Private Token（覆盖配置文件） |
-| `--base-url <url>` | 工蜂实例 URL（覆盖配置文件） |
-| `--pretty` | 输出带缩进的 JSON，仅供人类阅读；AI Agent 不应使用（浪费 token） |
+| `--project-id <id>` | 项目 ID 或 `namespace/project` 路径（覆盖配置）。支持整数 ID 或字符串路径 |
+| `--token <token>` | 工蜂 Private Token（覆盖配置） |
+| `--base-url <url>` | 工蜂实例 URL（覆盖配置） |
 | `--json` | 强制 JSON 输出（列表默认已是 JSON，详情默认 Markdown 更省 token） |
+| `--pretty` | 输出带缩进的 JSON，仅供人类阅读；AI Agent 不应使用（浪费 token），隐含 `--json` |
 
 ## 配置文件
 
@@ -146,7 +164,7 @@ gongfeng
 {
   "token": "your-private-token",
   "project_id": "namespace/project",
-  "base_url": "https://code.tencent.com/"
+  "base_url": "https://git.code.tencent.com/"
 }
 ```
 
@@ -155,6 +173,16 @@ gongfeng
 - **列表命令**：默认输出紧凑 JSON（无缩进），最小化 token 消耗
 - **详情命令**：默认输出 Markdown 格式，加 `--json` 可切换为 JSON
 - **人类阅读**：使用 `--pretty` 输出带缩进的 JSON
+
+## AI Coding 工具集成
+
+为 Cursor / Codex / Claude Code 等 AI Coding 工具一键生成 SKILL 指令文件：
+
+```bash
+gongfeng skill init
+```
+
+命令会扫描当前目录、交互式选择需要生成的工具，并在对应位置写入 `SKILL.md`，让 AI Agent 自动发现 gongfeng CLI 的使用规范。
 
 ## SDK
 
@@ -169,14 +197,18 @@ go get github.com/studyzy/gongfeng-sdk-go@latest
 ## 开发
 
 ```bash
-make build      # 构建
-make install    # 安装到 $GOPATH/bin
-make test       # 运行测试
-make coverage   # 测试覆盖率报告
-make lint       # 代码检查
-make fmt        # 代码格式化
-make clean      # 清理构建产物
+make build           # 构建
+make install         # 安装到 $GOPATH/bin
+make test            # 运行测试（含 -race 与覆盖率）
+make coverage        # 生成 HTML 覆盖率报告
+make lint            # gofmt-check + go vet + golangci-lint
+make fmt             # gofmt -w + goimports -w
+make ci              # 本地完整复现 GitHub CI 流程
+make tidy            # go mod tidy
+make clean           # 清理构建产物
 ```
+
+CI 由 [`.github/workflows/ci.yml`](.github/workflows/ci.yml) 定义，包含 build / test / lint 三个并行 Job。
 
 ## 许可证
 

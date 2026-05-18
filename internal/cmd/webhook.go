@@ -12,15 +12,15 @@ import (
 
 // webhook flags
 var (
-	whFlagURL          string
-	whFlagPushEvents   bool
-	whFlagIssuesEvents bool
-	whFlagMREvents     bool
+	whFlagURL           string
+	whFlagPushEvents    bool
+	whFlagIssuesEvents  bool
+	whFlagMREvents      bool
 	whFlagTagPushEvents bool
-	whFlagNoteEvents   bool
-	whFlagSSL          bool
-	whFlagPage         int
-	whFlagPerPage      int
+	whFlagNoteEvents    bool
+	whFlagSSL           bool
+	whFlagPage          int
+	whFlagPerPage       int
 )
 
 var webhookCmd = &cobra.Command{

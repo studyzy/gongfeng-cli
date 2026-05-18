@@ -10,9 +10,9 @@ import (
 
 // Config 表示本地持久化的配置数据，存储于 .gongfeng.json
 type Config struct {
-	Token      string `json:"token,omitempty"`
-	ProjectID  string `json:"project_id,omitempty"`
-	BaseURL    string `json:"base_url,omitempty"`
+	Token     string `json:"token,omitempty"`
+	ProjectID string `json:"project_id,omitempty"`
+	BaseURL   string `json:"base_url,omitempty"`
 }
 
 // LoadConfig 按优先级加载配置：环境变量 > ./.gongfeng.json > ~/.gongfeng.json

@@ -21,9 +21,8 @@ var (
 	flagToken     string
 	flagBaseURL   string
 
-	// 全局共享的客户端和配置
+	// 全局共享的客户端
 	apiClient *gongfeng.Client
-	appConfig *config.Config
 )
 
 // rootCmd 是 CLI 的根命令
@@ -82,7 +81,6 @@ func initClientAndConfig(cmd *cobra.Command) error {
 	if err != nil {
 		return err
 	}
-	appConfig = cfg
 
 	// 命令行标志覆盖配置
 	token := flagToken

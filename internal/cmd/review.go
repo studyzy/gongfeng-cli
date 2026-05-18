@@ -12,26 +12,26 @@ import (
 
 // review 子命令独有的 flag 变量
 var (
-	rvFlagReviewerID          int
-	rvFlagNecessaryReviewerID int
-	rvFlagMessage             string
-	rvFlagState               string
-	rvFlagOrderBy             string
-	rvFlagSort                string
-	rvFlagPage                int
-	rvFlagPerPage             int
-	rvFlagAuthorID            int
-	rvFlagSourceCommit        string
-	rvFlagSourceBranch        string
-	rvFlagTargetBranch        string
-	rvFlagTargetCommit        string
-	rvFlagTargetProjectID     int
-	rvFlagReviewerIDs         string
-	rvFlagNecessaryReviewerIDs string
-	rvFlagApproverRule        int
+	rvFlagReviewerID            int
+	rvFlagNecessaryReviewerID   int
+	rvFlagMessage               string
+	rvFlagState                 string
+	rvFlagOrderBy               string
+	rvFlagSort                  string
+	rvFlagPage                  int
+	rvFlagPerPage               int
+	rvFlagAuthorID              int
+	rvFlagSourceCommit          string
+	rvFlagSourceBranch          string
+	rvFlagTargetBranch          string
+	rvFlagTargetCommit          string
+	rvFlagTargetProjectID       int
+	rvFlagReviewerIDs           string
+	rvFlagNecessaryReviewerIDs  string
+	rvFlagApproverRule          int
 	rvFlagNecessaryApproverRule int
-	rvFlagTitle               string
-	rvFlagDescription         string
+	rvFlagTitle                 string
+	rvFlagDescription           string
 )
 
 var reviewCmd = &cobra.Command{
