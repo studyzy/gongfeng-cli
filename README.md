@@ -205,10 +205,30 @@ make lint            # gofmt-check + go vet + golangci-lint
 make fmt             # gofmt -w + goimports -w
 make ci              # 本地完整复现 GitHub CI 流程
 make tidy            # go mod tidy
+make release-check   # 校验 .goreleaser.yml
+make release-snapshot # 本地快照构建（不发布），生成跨平台产物到 dist/
 make clean           # 清理构建产物
 ```
 
 CI 由 [`.github/workflows/ci.yml`](.github/workflows/ci.yml) 定义，包含 build / test / lint 三个并行 Job。
+
+## 发布
+
+推送 `v*` 形式的 tag 时，[`.github/workflows/release.yml`](.github/workflows/release.yml) 会自动通过 [GoReleaser](https://goreleaser.com) 构建并发布到 GitHub Releases，包含以下产物：
+
+- `gongfeng_<version>_linux_x86_64.tar.gz`
+- `gongfeng_<version>_macos_arm64.tar.gz`
+- `gongfeng_<version>_windows_x86_64.zip`
+- `checksums.txt`（SHA-256）
+
+发布流程：
+
+```bash
+git tag v0.1.0
+git push origin v0.1.0
+```
+
+构建配置见 [`.goreleaser.yml`](.goreleaser.yml)，本地试跑可执行 `make release-snapshot`。
 
 ## 许可证
 
