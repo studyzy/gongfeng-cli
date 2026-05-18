@@ -31,6 +31,11 @@ var (
 var mrCmd = &cobra.Command{
 	Use:   "mr",
 	Short: "合并请求管理",
+	Long: `合并请求管理。
+
+注意：所有子命令的 <mr_global_id> 参数指 MR 的【全局 id】，
+而非项目内的 iid（在工蜂网页 URL 中看到的编号）。
+可以用 ` + "`gongfeng --project-id=<pid> mr list`" + ` 输出中的 id 字段获取。`,
 }
 
 var mrListCmd = &cobra.Command{
@@ -62,12 +67,12 @@ var mrListCmd = &cobra.Command{
 }
 
 var mrShowCmd = &cobra.Command{
-	Use:   "show <mr_id>",
-	Short: "获取 MR 详情",
+	Use:   "show <mr_global_id>",
+	Short: "获取 MR 详情（mr_global_id 为全局 id，非 iid）",
 	Args:  cobra.ExactArgs(1),
 	RunE: func(cmd *cobra.Command, args []string) error {
 		requireProjectID()
-		mrID := atoi(args[0], "mr_id")
+		mrID := atoi(args[0], "mr_global_id")
 		mr, _, err := apiClient.MergeRequests.GetMergeRequest(context.Background(), projectID(), mrID)
 		if err != nil {
 			exitWithAPIError(err)
@@ -116,12 +121,12 @@ var mrCreateCmd = &cobra.Command{
 }
 
 var mrUpdateCmd = &cobra.Command{
-	Use:   "update <mr_id>",
-	Short: "更新 MR",
+	Use:   "update <mr_global_id>",
+	Short: "更新 MR（mr_global_id 为全局 id，非 iid）",
 	Args:  cobra.ExactArgs(1),
 	RunE: func(cmd *cobra.Command, args []string) error {
 		requireProjectID()
-		mrID := atoi(args[0], "mr_id")
+		mrID := atoi(args[0], "mr_global_id")
 		opts := &gongfeng.UpdateMergeRequestOptions{}
 		if mrFlagTitle != "" {
 			opts.Title = gongfeng.Ptr(mrFlagTitle)
@@ -147,12 +152,12 @@ var mrUpdateCmd = &cobra.Command{
 }
 
 var mrAcceptCmd = &cobra.Command{
-	Use:   "accept <mr_id>",
-	Short: "合并 MR",
+	Use:   "accept <mr_global_id>",
+	Short: "合并 MR（mr_global_id 为全局 id，非 iid）",
 	Args:  cobra.ExactArgs(1),
 	RunE: func(cmd *cobra.Command, args []string) error {
 		requireProjectID()
-		mrID := atoi(args[0], "mr_id")
+		mrID := atoi(args[0], "mr_global_id")
 		opts := &gongfeng.AcceptMergeRequestOptions{}
 		if mrFlagMergeMsg != "" {
 			opts.MergeCommitMessage = gongfeng.Ptr(mrFlagMergeMsg)
@@ -166,12 +171,12 @@ var mrAcceptCmd = &cobra.Command{
 }
 
 var mrChangesCmd = &cobra.Command{
-	Use:   "changes <mr_id>",
-	Short: "获取 MR 代码变更",
+	Use:   "changes <mr_global_id>",
+	Short: "获取 MR 代码变更（mr_global_id 为全局 id，非 iid）",
 	Args:  cobra.ExactArgs(1),
 	RunE: func(cmd *cobra.Command, args []string) error {
 		requireProjectID()
-		mrID := atoi(args[0], "mr_id")
+		mrID := atoi(args[0], "mr_global_id")
 		changes, _, err := apiClient.MergeRequests.GetMergeRequestChanges(context.Background(), projectID(), mrID)
 		if err != nil {
 			exitWithAPIError(err)
@@ -181,12 +186,12 @@ var mrChangesCmd = &cobra.Command{
 }
 
 var mrCommitsCmd = &cobra.Command{
-	Use:   "commits <mr_id>",
-	Short: "获取 MR 提交列表",
+	Use:   "commits <mr_global_id>",
+	Short: "获取 MR 提交列表（mr_global_id 为全局 id，非 iid）",
 	Args:  cobra.ExactArgs(1),
 	RunE: func(cmd *cobra.Command, args []string) error {
 		requireProjectID()
-		mrID := atoi(args[0], "mr_id")
+		mrID := atoi(args[0], "mr_global_id")
 		opts := &gongfeng.ListMergeRequestCommitsOptions{
 			ListOptions: gongfeng.ListOptions{
 				Page:    mrFlagPage,
@@ -202,12 +207,12 @@ var mrCommitsCmd = &cobra.Command{
 }
 
 var mrCommentsCmd = &cobra.Command{
-	Use:   "comments <mr_id>",
-	Short: "获取 MR 评论列表",
+	Use:   "comments <mr_global_id>",
+	Short: "获取 MR 评论列表（mr_global_id 为全局 id，非 iid）",
 	Args:  cobra.ExactArgs(1),
 	RunE: func(cmd *cobra.Command, args []string) error {
 		requireProjectID()
-		mrID := atoi(args[0], "mr_id")
+		mrID := atoi(args[0], "mr_global_id")
 		opts := &gongfeng.ListMRCommentsOptions{
 			ListOptions: gongfeng.ListOptions{
 				Page:    mrFlagPage,
@@ -223,12 +228,12 @@ var mrCommentsCmd = &cobra.Command{
 }
 
 var mrDownloadFilesCmd = &cobra.Command{
-	Use:   "download-files <mr_id>",
-	Short: "下载 MR 差异文件集",
+	Use:   "download-files <mr_global_id>",
+	Short: "下载 MR 差异文件集（mr_global_id 为全局 id，非 iid）",
 	Args:  cobra.ExactArgs(1),
 	RunE: func(cmd *cobra.Command, args []string) error {
 		requireProjectID()
-		mrID := atoi(args[0], "mr_id")
+		mrID := atoi(args[0], "mr_global_id")
 		_, err := apiClient.MergeRequests.DownloadMergeRequestChangedFiles(context.Background(), projectID(), mrID, os.Stdout)
 		if err != nil {
 			exitWithAPIError(err)

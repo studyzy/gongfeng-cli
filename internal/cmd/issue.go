@@ -232,21 +232,6 @@ var issueUnsubscribeCmd = &cobra.Command{
 	},
 }
 
-var issueDeleteCmd = &cobra.Command{
-	Use:   "delete <issue_id>",
-	Short: "删除缺陷",
-	Args:  cobra.ExactArgs(1),
-	RunE: func(cmd *cobra.Command, args []string) error {
-		requireProjectID()
-		issueID := atoi(args[0], "issue_id")
-		_, err := apiClient.Issues.DeleteIssue(context.Background(), projectID(), issueID)
-		if err != nil {
-			exitWithAPIError(err)
-		}
-		return output.PrintJSON(os.Stdout, &output.SuccessResponse{Success: true}, !flagPretty)
-	},
-}
-
 func init() {
 	// list flags
 	issueListCmd.Flags().StringVar(&isFlagState, "state", "", "缺陷状态过滤（opened/closed）")
@@ -287,6 +272,6 @@ func init() {
 	issueUpdateCmd.Flags().StringVar(&isFlagResolveState, "resolve-state", "", "解决状态")
 	issueUpdateCmd.Flags().IntVar(&isFlagGrade, "grade", 0, "等级")
 
-	issueCmd.AddCommand(issueListCmd, issueMyListCmd, issueShowCmd, issueCreateCmd, issueUpdateCmd, issueSubscribeCmd, issueUnsubscribeCmd, issueDeleteCmd)
+	issueCmd.AddCommand(issueListCmd, issueMyListCmd, issueShowCmd, issueCreateCmd, issueUpdateCmd, issueSubscribeCmd, issueUnsubscribeCmd)
 	rootCmd.AddCommand(issueCmd)
 }
